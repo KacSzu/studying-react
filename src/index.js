@@ -59,42 +59,41 @@ function App() {
 function Header() {
   return (
     <header className="header">
-      <h1>Fast React Pizza Co.</h1>;
+      <h1>Fast React Pizza Co.</h1>
     </header>
   );
 }
 function Menu() {
+  const pizzas = pizzaData;
+
+  const numPizzas = pizzas.length;
   return (
     <main className="menu ">
       <h2> Our Menu</h2>
-      <ul className="pizzas">
-        <Pizza
-          name="Pizza Spinaci"
-          ingredients="Tomato, mozarella, spinach, and ricotta cheese"
-          photoName="pizzas/spinaci.jpg"
-          price="12"
-        />
-        <Pizza
-          name="Pizza Funghi"
-          ingredients="Tomato, mozarella, mushrooms, and onion"
-          photoName="pizzas/funghi.jpg"
-          price="12"
-        />
-      </ul>
+
+      {numPizzas > 0 ? (
+        <ul className="pizzas">
+          {pizzas.map((pizza) => {
+            return <Pizza pizzaObj={pizza} key={pizza.name} />;
+          })}
+        </ul>
+      ) : (
+        <p>We're still working on our menu. Please come back later</p>
+      )}
     </main>
   );
 }
-function Pizza({ name, ingredients, photoName, price }) {
-  console.log(ingredients);
+function Pizza({ pizzaObj }) {
+  if (pizzaObj.soldOut) return null;
   return (
-    <div className="pizza">
-      <img alt={name} src={photoName} />
+    <li className="pizza">
+      <img alt={pizzaObj.name} src={pizzaObj.photoName} />
       <div>
-        <h3>{name}</h3>
-        <p>{ingredients}</p>
-        <span>{+price + 3}</span>
+        <h3>{pizzaObj.name}</h3>
+        <p>{pizzaObj.ingredients}</p>
+        <span>{+pizzaObj.price + 3}</span>
       </div>
-    </div>
+    </li>
   );
 }
 function Footer() {
@@ -102,9 +101,34 @@ function Footer() {
   const openHour = 12;
   const closeHour = 22;
   const isOpen = hour >= openHour && hour <= closeHour;
-  return <footer className="footer">We're currently open</footer>;
+  if (!isOpen)
+    return (
+      <p>
+        Sorry, we're happy welcome you between {openHour}:00 and {closeHour}
+        :00
+      </p>
+    );
+  return (
+    <footer className="footer">
+      {isOpen ? (
+        <Order openHour={openHour} closeHour={closeHour} />
+      ) : (
+        <p>
+          Sorry, we're happy welcome you between {openHour}:00 and {closeHour}
+          :00
+        </p>
+      )}
+    </footer>
+  );
 }
-
+function Order({ closeHour, openHour }) {
+  return (
+    <div class="order">
+      <p>We're open untill {closeHour}:00. Come visit us or order online</p>
+      <button className="btn">Order</button>
+    </div>
+  );
+}
 // React v18
 const root = ReactDOM.createRoot(document.querySelector("#root"));
 root.render(
